@@ -3,6 +3,7 @@
 local M = require('lualine.component'):extend()
 local modules = require('lualine_require').lazy_require {
   git_branch = 'lualine.components.branch.git_branch',
+  hg_branch = 'lualine.components.branch.hg_branch',
   highlight = 'lualine.highlight',
   utils = 'lualine.utils.utils',
 }
@@ -14,11 +15,15 @@ M.init = function(self, options)
     self.options.icon = '' -- e0a0
   end
   modules.git_branch.init()
+  modules.hg_branch.init()
 end
 
 M.update_status = function(_, is_focused)
   local buf = (not is_focused and vim.api.nvim_get_current_buf())
   local branch = modules.git_branch.get_branch(buf)
+  if branch == '' then
+    branch = modules.hg_branch.get_branch(buf)
+  end
   return modules.utils.stl_escape(branch)
 end
 
